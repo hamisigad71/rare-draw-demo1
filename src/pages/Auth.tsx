@@ -1,19 +1,28 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SignIn, SignUp, useUser } from "@clerk/clerk-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Lock, User } from "lucide-react";
+import { Sparkles, Lock, User, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import logo from "@/assets/raredraw.png";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { isSignedIn, isLoaded } = useUser();
+  const [isDemo, setIsDemo] = useState(false);
 
   useEffect(() => {
     if (isLoaded && isSignedIn) {
       navigate("/");
     }
   }, [isLoaded, isSignedIn, navigate]);
+
+  const handleDemoSignIn = () => {
+    setIsDemo(true);
+    // Store demo mode in localStorage
+    localStorage.setItem("demo_mode", "true");
+    navigate("/dashboard");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-hero overflow-hidden flex items-center justify-center p-4">
@@ -152,7 +161,17 @@ const Auth = () => {
                 </TabsContent>
               </Tabs>
 
-              <div className="mt-8 pt-6 border-t border-border/20">
+              <div className="mt-8 pt-6 border-t border-border/20 space-y-4">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-primary opacity-20 blur-lg" />
+                  <Button
+                    onClick={handleDemoSignIn}
+                    className="relative w-full bg-gradient-primary hover:opacity-90 text-white font-bold py-6 rounded-lg transition-all duration-300 text-lg shadow-lg hover:shadow-xl"
+                  >
+                    <Zap className="w-5 h-5 mr-2" />
+                    Sign Demo
+                  </Button>
+                </div>
                 <p className="text-xs text-center text-muted-foreground">
                   By signing in or creating an account, you agree to our{" "}
                   <a href="/terms-of-service" className="text-primary hover:underline font-medium">
