@@ -1,0 +1,50 @@
+project_id = "yqjtlfvnwzxxymmbwbbe"
+
+[functions.clerk-webhook]
+verify_jwt = false
+
+[functions.create-paystack-payment]
+verify_jwt = false
+
+[functions.verify-paystack-payment]
+verify_jwt = false
+
+[functions.generate-deck-cards]
+verify_jwt = false
+
+[functions.increment-deck-plays]
+verify_jwt = false
+
+[functions.get-deck-details]
+verify_jwt = false
+
+[functions.record-game-session]
+verify_jwt = false
+
+[functions.list-admin-decks]
+verify_jwt = false
+
+[db]
+port = 54322
+shadow_port = 54320
+
+[db.pooler]
+enabled = false
+port = 54329
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://127.0.0.1:3000"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true
+secure_password_change = false
+max_frequency = "1m0s"
+otp_length = 6
+otp_expiry = 3600
