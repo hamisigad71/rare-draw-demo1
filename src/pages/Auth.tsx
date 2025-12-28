@@ -127,7 +127,7 @@ const Auth = () => {
                           socialButtonsPlacement: "bottom",
                         },
                       }}
-                      redirectUrl="/"
+                      redirectUrl="/dashboard"
                     />
                   </div>
                 </TabsContent>
@@ -155,7 +155,7 @@ const Auth = () => {
                           socialButtonsPlacement: "bottom",
                         },
                       }}
-                      redirectUrl="/"
+                      redirectUrl="/dashboard"
                     />
                   </div>
                 </TabsContent>

@@ -18,92 +18,56 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
+import { fetchUserStats, DEMO_STATS, UserStats } from "@/lib/userStats";
 
 export const Dashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isSignedIn, isLoaded } = useAuth();
   const [isDemo, setIsDemo] = useState(false);
   const [userName, setUserName] = useState("Player");
+  const [stats, setStats] = useState<UserStats>(DEMO_STATS);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const demoMode = localStorage.getItem("demo_mode");
     setIsDemo(!!demoMode);
-    
+
     if (demoMode) {
       setUserName("Demo Player");
-    } else if (user?.firstName) {
-      setUserName(user.firstName);
+      setStats(DEMO_STATS);
+      setLoading(false);
+    } else if (isLoaded && isSignedIn && user?.id) {
+      // Fetch real user stats
+      setUserName(user.firstName || "Player");
+      fetchUserStats(user.id)
+        .then((userStats) => {
+          setStats(userStats);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch user stats:", error);
+          // Fallback to demo stats on error
+          setStats(DEMO_STATS);
+          setLoading(false);
+        });
+    } else if (isLoaded && !isSignedIn && !demoMode) {
+      // Redirect to auth if not signed in and not demo
+      navigate("/auth");
     }
-  }, [user]);
+  }, [user, isSignedIn, isLoaded, navigate]);
 
-  // Enhanced mock stats with more detailed data
-  const stats = {
-    gamesPlayed: 42,
-    totalPoints: 3250,
-    favoriteDecks: 8,
-    winStreak: 7,
-    level: 15,
-    nextLevelProgress: 65,
-    achievements: 24,
-    friends: 18,
-  };
-
-  const recentActivity = [
-    {
-      id: 1,
-      date: "Today at 8:30 PM",
-      deck: "🔥 Spicy Conversations",
-      players: 6,
-      duration: "45 min",
-      result: "Won",
-      points: 125,
-    },
-    {
-      id: 2,
-      date: "Yesterday at 7:00 PM",
-      deck: "💕 Romance Collection",
-      players: 4,
-      duration: "30 min",
-      result: "Won",
-      points: 95,
-    },
-    {
-      id: 3,
-      date: "2 days ago",
-      deck: "🎭 Adventure Quest",
-      players: 5,
-      duration: "50 min",
-      result: "Won",
-      points: 110,
-    },
-  ];
-
-  const topDecks = [
-    {
-      id: 1,
-      name: "Spicy Conversations",
-      plays: 15,
-      rating: 4.8,
-      category: "Adult Party",
-      color: "from-red-500",
-    },
-    {
-      id: 2,
-      name: "Romance Collection",
-      plays: 12,
-      rating: 4.9,
-      category: "Couples",
-      color: "from-pink-500",
-    },
-    {
-      id: 3,
-      name: "Adventure Quest",
-      plays: 10,
-      rating: 4.7,
-      category: "Adventure",
-      color: "from-blue-500",
-    },
-  ];
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-hero pt-24 pb-16 px-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block p-6 rounded-full bg-primary/10 mb-4 animate-pulse">
+            <Trophy className="w-8 h-8 text-primary" />
+          </div>
+          <p className="text-lg text-foreground/70 font-semibold">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   const achievements = [
     { icon: "🏆", title: "Champion", desc: "Won 10 games" },
@@ -282,7 +246,7 @@ export const Dashboard = () => {
               <h2 className="text-2xl font-bold">Recent Games</h2>
             </div>
             <div className="space-y-4">
-              {recentActivity.map((activity, index) => (
+              {stats.recentActivity.map((activity, index) => (
                 <div
                   key={activity.id}
                   className="premium-card border-l-4 border-l-primary hover:shadow-elevated transition-all duration-300 cursor-pointer group animate-fade-in"
@@ -367,7 +331,7 @@ export const Dashboard = () => {
                 <h3 className="font-bold text-lg">Your Top Decks</h3>
               </div>
               <div className="space-y-3">
-                {topDecks.map((deck) => (
+                {stats.topDecks.map((deck) => (
                   <div
                     key={deck.id}
                     className="premium-card border-l-4 border-l-primary hover:shadow-elevated transition-all cursor-pointer group"
@@ -380,7 +344,7 @@ export const Dashboard = () => {
                           <span>•</span>
                           <span>{deck.plays} plays</span>
                           <span>•</span>
-                          <span>⭐ {deck.rating}</span>
+                          <span>⭐ {deck.rating.toFixed(1)}</span>
                         </div>
                       </div>
                       <div className={`w-2 h-8 rounded-full bg-gradient-to-b ${deck.color}`} />
