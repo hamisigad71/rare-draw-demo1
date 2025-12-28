@@ -161,7 +161,13 @@
 
 @layer components {
   .premium-card {
-    @apply bg-gradient-card border border-border/50 rounded-xl p-6 shadow-card hover:shadow-elevated hover:border-primary/50 transition-all duration-300;
+    @apply bg-gradient-card border border-border/50 rounded-xl p-6 transition-all duration-300;
+    box-shadow: var(--shadow-card);
+  }
+
+  .premium-card:hover {
+    box-shadow: var(--shadow-elevated);
+    @apply border-primary/50;
   }
 
   .premium-button {
