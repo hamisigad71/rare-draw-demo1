@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.window"],
+    "target": "ES2022"
+  },
+  "imports": {
+    "@clerk/backend": "https://esm.sh/@clerk/backend@1.27.3"
+  },
+  "tasks": {
+    "start": "deno run --allow-all functions/*/*.ts"
+  }
+}

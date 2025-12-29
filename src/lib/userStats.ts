@@ -10,6 +10,7 @@ export interface UserStats {
   nextLevelProgress: number;
   achievements: number;
   friends: number;
+  isNewUser: boolean;
   recentActivity: Array<{
     id: string;
     date: string;
@@ -39,6 +40,7 @@ export const DEMO_STATS: UserStats = {
   nextLevelProgress: 65,
   achievements: 24,
   friends: 18,
+  isNewUser: false,
   recentActivity: [
     {
       id: "1",
@@ -109,7 +111,40 @@ export async function fetchUserStats(userId: string): Promise<UserStats> {
 
     if (gamePlayersError) {
       userLogger.error("Failed to fetch game players", { error: gamePlayersError });
-      return DEMO_STATS; // Fallback to demo stats
+      return {
+        ...DEMO_STATS,
+        gamesPlayed: 0,
+        totalPoints: 0,
+        favoriteDecks: 0,
+        winStreak: 0,
+        level: 1,
+        nextLevelProgress: 0,
+        achievements: 0,
+        friends: 0,
+        isNewUser: true,
+        recentActivity: [],
+        topDecks: [],
+      };
+    }
+
+    // Check if this is a new user (no games played)
+    const isNewUser = !gamePlayers || gamePlayers.length === 0;
+
+    if (isNewUser) {
+      userLogger.info("New user detected", { userId });
+      return {
+        gamesPlayed: 0,
+        totalPoints: 0,
+        favoriteDecks: 0,
+        winStreak: 0,
+        level: 1,
+        nextLevelProgress: 0,
+        achievements: 0,
+        friends: 0,
+        isNewUser: true,
+        recentActivity: [],
+        topDecks: [],
+      };
     }
 
     // Get unique games
@@ -216,12 +251,26 @@ export async function fetchUserStats(userId: string): Promise<UserStats> {
       nextLevelProgress: Math.round(nextLevelProgress),
       achievements,
       friends: friendsCount,
-      recentActivity: recentActivity.length > 0 ? recentActivity : DEMO_STATS.recentActivity,
-      topDecks: topDecks.length > 0 ? topDecks : DEMO_STATS.topDecks,
+      isNewUser: false,
+      recentActivity: recentActivity.length > 0 ? recentActivity : [],
+      topDecks: topDecks.length > 0 ? topDecks : [],
     };
   } catch (error) {
     logger.error("Error fetching user stats", { error });
-    return DEMO_STATS; // Fallback to demo stats on error
+    return {
+      ...DEMO_STATS,
+      gamesPlayed: 0,
+      totalPoints: 0,
+      favoriteDecks: 0,
+      winStreak: 0,
+      level: 1,
+      nextLevelProgress: 0,
+      achievements: 0,
+      friends: 0,
+      isNewUser: true,
+      recentActivity: [],
+      topDecks: [],
+    };
   }
 }
 

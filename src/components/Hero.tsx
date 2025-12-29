@@ -2,12 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, Play } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
+import { useUser } from "@clerk/clerk-react";
 import logo from "@/assets/raredraw.png";
 import { fetchPublicDeckStats } from "@/repositories/decksRepository";
 import { logger, updateLoggerContext, toErrorMetadata } from "@/lib/logger";
 
 export const Hero = () => {
   const navigate = useNavigate();
+  const { isSignedIn } = useUser();
   const [freeDeckId, setFreeDeckId] = useState<string | null>(null);
   const heroLogger = useMemo(
     () => logger.withContext({ component: "hero" }),
@@ -33,6 +35,14 @@ export const Hero = () => {
 
     fetchStats();
   }, [heroLogger]);
+
+  const handlePlayClick = () => {
+    if (!isSignedIn) {
+      navigate("/auth");
+    } else {
+      navigate(freeDeckId ? `/game?deck=${freeDeckId}` : "/marketplace");
+    }
+  };
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero">
@@ -75,11 +85,7 @@ export const Hero = () => {
             <Button
               size="lg"
               className="bg-gradient-to-r from-primary via-primary/90 to-primary hover:from-primary/90 hover:via-primary hover:to-primary/90 text-primary-foreground font-bold px-10 py-7 text-lg transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-2xl"
-              onClick={() =>
-                navigate(
-                  freeDeckId ? `/game?deck=${freeDeckId}` : "/marketplace"
-                )
-              }
+              onClick={handlePlayClick}
             >
               <Play className="mr-2 h-6 w-6" />
               <span>Play Now</span>

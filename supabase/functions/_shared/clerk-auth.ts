@@ -1,8 +1,19 @@
+ 
+// @ts-ignore - Deno types
+/// <reference lib="deno.window" />
+// @ts-ignore - Deno types
+/// <reference lib="deno.unstable" />
+
+// @ts-ignore - Deno module
+import { load } from "https://deno.land/std@0.208.0/dotenv/mod.ts";
+
 import {
   createClerkClient,
   verifyToken as clerkVerifyToken,
+  // @ts-ignore - Deno environment
 } from "https://esm.sh/@clerk/backend@1.27.3";
 
+// @ts-ignore - Deno global
 const secretKey = Deno.env.get("CLERK_SECRET_KEY");
 
 if (!secretKey) {

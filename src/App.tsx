@@ -15,6 +15,7 @@ const Game = lazy(() => import("./pages/Game"));
 const GameEnd = lazy(() => import("./pages/GameEnd"));
 const Library = lazy(() => import("./pages/Library"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Demo = lazy(() => import("./pages/Demo"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const Auth = lazy(() => import("./pages/Auth"));
 const AdminCardGeneration = lazy(() => import("./pages/AdminCardGeneration"));
@@ -55,6 +56,7 @@ const App = () => (
             <Route path="/game-end" element={<GameEnd />} />
             <Route path="/library" element={<Library />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/demo" element={<Demo />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<AdminDashboard />} />

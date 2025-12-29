@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { SignIn, SignUp, useUser } from "@clerk/clerk-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, Lock, User, Zap } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import logo from "@/assets/raredraw.png";
 
 const Auth = () => {
@@ -21,11 +20,58 @@ const Auth = () => {
     setIsDemo(true);
     // Store demo mode in localStorage
     localStorage.setItem("demo_mode", "true");
-    navigate("/dashboard");
+    navigate("/demo");
   };
 
   return (
     <div className="min-h-screen bg-gradient-hero overflow-hidden flex items-center justify-center p-4">
+      <style>{`
+        /* Clerk SignIn Styling */
+        .clerk-signin-wrapper .cl-cardBox__header {
+          display: none !important;
+        }
+        
+        .clerk-signin-wrapper .cl-card {
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+        }
+
+        .clerk-signin-wrapper .cl-form__header {
+          display: none !important;
+        }
+
+        .clerk-signin-wrapper .cl-form__subtitle,
+        .clerk-signin-wrapper .cl-card h1,
+        .clerk-signin-wrapper .cl-card h2,
+        .clerk-signin-wrapper .cl-card p,
+        .clerk-signin-wrapper .cl-card span {
+          color: white !important;
+        }
+
+        /* Clerk SignUp Styling */
+        .clerk-signup-wrapper .cl-cardBox__header {
+          display: none !important;
+        }
+        
+        .clerk-signup-wrapper .cl-card {
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+        }
+
+        .clerk-signup-wrapper .cl-form__header {
+          display: none !important;
+        }
+
+        .clerk-signup-wrapper .cl-form__subtitle,
+        .clerk-signup-wrapper .cl-card h1,
+        .clerk-signup-wrapper .cl-card h2,
+        .clerk-signup-wrapper .cl-card p,
+        .clerk-signup-wrapper .cl-card span {
+          color: white !important;
+        }
+      `}</style>
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden -z-10">
         <div className="absolute top-0 -left-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse" />
@@ -90,14 +136,14 @@ const Auth = () => {
                 <TabsList className="grid w-full grid-cols-2 mb-8 bg-secondary/5 p-1 rounded-lg">
                   <TabsTrigger 
                     value="signin"
-                    className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white font-semibold rounded-md transition-all duration-300"
+                    className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-foreground/70 hover:bg-primary/10 font-semibold rounded-md transition-all duration-300 text-white"
                   >
                     <Lock className="w-4 h-4 mr-2" />
                     Sign In
                   </TabsTrigger>
                   <TabsTrigger 
                     value="signup"
-                    className="data-[state=active]:bg-gradient-secondary data-[state=active]:text-white font-semibold rounded-md transition-all duration-300"
+                    className="data-[state=active]:bg-gradient-secondary data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-foreground/70 hover:bg-secondary/10 font-semibold rounded-md transition-all duration-300 text-white"
                   >
                     <User className="w-4 h-4 mr-2" />
                     Sign Up
@@ -105,7 +151,7 @@ const Auth = () => {
                 </TabsList>
 
                 <TabsContent value="signin" className="space-y-4">
-                  <p className="text-sm text-muted-foreground text-center mb-6">
+                  <p className="text-sm text-white text-center mb-6">
                     Welcome back! Sign in to your account to continue your gaming journey
                   </p>
                   <div className="clerk-signin-wrapper">
@@ -114,26 +160,28 @@ const Auth = () => {
                         elements: {
                           rootBox: "w-full",
                           card: "shadow-none border-none bg-transparent",
-                          formButtonPrimary: "bg-gradient-primary hover:opacity-90 w-full rounded-lg font-semibold",
-                          formFieldInput: "rounded-lg border-border/30 focus:border-primary transition-colors",
-                          footerActionLink: "text-primary hover:text-primary/80",
-                          dividerLine: "bg-border/20",
-                          dividerText: "text-muted-foreground",
-                          socialButtonsBlockButton: "border-border/30 hover:bg-secondary/5 rounded-lg",
-                          socialButtonsBlockButtonText: "text-foreground font-medium",
+                          formFieldLabel: "text-sm font-semibold text-foreground mb-2",
+                          formFieldInput: "w-full px-4 py-3 rounded-lg border-2 border-border/30 bg-background/40 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 font-medium",
+                          formButtonPrimary: "w-full py-3 px-4 rounded-lg bg-gradient-primary text-white font-semibold shadow-lg hover:shadow-xl hover:opacity-95 transition-all duration-300 text-base",
+                          dividerLine: "bg-gradient-to-r from-transparent via-border/40 to-transparent",
+                          dividerText: "text-xs font-semibold text-muted-foreground uppercase tracking-wider",
+                          socialButtonsBlockButton: "w-full px-4 py-3 rounded-lg border-2 border-border/40 bg-background/30 hover:bg-primary/5 hover:border-primary/50 transition-all duration-200 font-medium text-foreground shadow-sm hover:shadow-md",
+                          socialButtonsBlockButtonText: "text-sm font-semibold text-foreground",
+                          footerActionText: "text-xs text-muted-foreground font-medium",
+                          footerActionLink: "text-primary font-semibold hover:text-primary/80 transition-colors",
                         },
                         layout: {
                           socialButtonsVariant: "blockButton",
                           socialButtonsPlacement: "bottom",
                         },
                       }}
-                      redirectUrl="/dashboard"
+                      redirectUrl="/"
                     />
                   </div>
                 </TabsContent>
 
                 <TabsContent value="signup" className="space-y-4">
-                  <p className="text-sm text-muted-foreground text-center mb-6">
+                  <p className="text-sm text-white text-center mb-6">
                     Join RareDraw and start creating amazing memories with your friends
                   </p>
                   <div className="clerk-signup-wrapper">
@@ -142,36 +190,35 @@ const Auth = () => {
                         elements: {
                           rootBox: "w-full",
                           card: "shadow-none border-none bg-transparent",
-                          formButtonPrimary: "bg-gradient-secondary hover:opacity-90 w-full rounded-lg font-semibold",
-                          formFieldInput: "rounded-lg border-border/30 focus:border-secondary transition-colors",
-                          footerActionLink: "text-secondary hover:text-secondary/80",
-                          dividerLine: "bg-border/20",
-                          dividerText: "text-muted-foreground",
-                          socialButtonsBlockButton: "border-border/30 hover:bg-secondary/5 rounded-lg",
-                          socialButtonsBlockButtonText: "text-foreground font-medium",
+                          formFieldLabel: "text-sm font-semibold text-foreground mb-2",
+                          formFieldInput: "w-full px-4 py-3 rounded-lg border-2 border-border/30 bg-background/40 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 font-medium",
+                          formButtonPrimary: "w-full py-3 px-4 rounded-lg bg-gradient-secondary text-white font-semibold shadow-lg hover:shadow-xl hover:opacity-95 transition-all duration-300 text-base",
+                          dividerLine: "bg-gradient-to-r from-transparent via-border/40 to-transparent",
+                          dividerText: "text-xs font-semibold text-muted-foreground uppercase tracking-wider",
+                          socialButtonsBlockButton: "w-full px-4 py-3 rounded-lg border-2 border-border/40 bg-background/30 hover:bg-secondary/5 hover:border-secondary/50 transition-all duration-200 font-medium text-foreground shadow-sm hover:shadow-md",
+                          socialButtonsBlockButtonText: "text-sm font-semibold text-foreground",
+                          footerActionText: "text-xs text-muted-foreground font-medium",
+                          footerActionLink: "text-secondary font-semibold hover:text-secondary/80 transition-colors",
                         },
                         layout: {
                           socialButtonsVariant: "blockButton",
                           socialButtonsPlacement: "bottom",
                         },
                       }}
-                      redirectUrl="/dashboard"
+                      redirectUrl="/"
                     />
                   </div>
                 </TabsContent>
               </Tabs>
 
               <div className="mt-8 pt-6 border-t border-border/20 space-y-4">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-primary opacity-20 blur-lg" />
-                  <Button
-                    onClick={handleDemoSignIn}
-                    className="relative w-full bg-gradient-primary hover:opacity-90 text-white font-bold py-6 rounded-lg transition-all duration-300 text-lg shadow-lg hover:shadow-xl"
-                  >
-                    <Zap className="w-5 h-5 mr-2" />
-                    Sign Demo
-                  </Button>
-                </div>
+                <button
+                  onClick={handleDemoSignIn}
+                  className="w-full py-3 px-4 rounded-lg bg-gradient-primary text-white font-semibold shadow-lg hover:shadow-xl hover:opacity-95 transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  <Zap className="w-5 h-5" />
+                  Try Demo Instantly
+                </button>
                 <p className="text-xs text-center text-muted-foreground">
                   By signing in or creating an account, you agree to our{" "}
                   <a href="/terms-of-service" className="text-primary hover:underline font-medium">

@@ -11,6 +11,8 @@
     "skipLibCheck": true,
     "allowJs": true,
     "noUnusedLocals": false,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "lib": ["ES2022", "deno.window"],
+    "types": ["deno.window"]
   }
 }

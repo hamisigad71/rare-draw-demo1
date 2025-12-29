@@ -1,39 +1,38 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Briefcase, Users, Sparkles, Gamepad2, Globe } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 const deckThemes = [
   {
-    icon: Heart,
+    emoji: "❤️",
     name: "Romance",
     description: "Heart-warming prompts and challenges for couples and date nights",
     rarity: "Premium Collection"
   },
   {
-    icon: Briefcase,
+    emoji: "💼",
     name: "Work & Career",
     description: "Professional development and team-building scenarios for the workplace",
     rarity: "Executive Edition"
   },
   {
-    icon: Users,
+    emoji: "👥",
     name: "Friendship",
     description: "Strengthen bonds with fun challenges and deep conversation starters",
     rarity: "Classic Collection"
   },
   {
-    icon: Sparkles,
+    emoji: "🎉",
     name: "Party & Events",
     description: "Icebreakers and entertainment for any social gathering",
     rarity: "Celebration Pack"
   },
   {
-    icon: Gamepad2,
+    emoji: "🎮",
     name: "Adventure",
     description: "Story-driven scenarios and role-playing challenges",
     rarity: "Epic Series"
   },
   {
-    icon: Globe,
+    emoji: "🌍",
     name: "Cultural Discovery",
     description: "Explore traditions, customs, and perspectives from around the world",
     rarity: "World Tour"
@@ -53,29 +52,31 @@ export const GameTypes = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {deckThemes.map((deck, index) => (
-            <Card 
+            <div 
               key={index} 
-              className="bg-gradient-card border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-glow hover:scale-105 group cursor-pointer"
+              className="premium-card border-l-4 border-l-primary hover:shadow-elevated transition-all hover:-translate-y-1 group cursor-pointer animate-fade-in"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <CardContent className="p-6">
-                <div className="mb-4 inline-block p-3 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
-                  <deck.icon className="h-8 w-8 text-primary" />
+              <div className="flex items-start gap-4">
+                <div className="text-4xl flex-shrink-0">
+                  {deck.emoji}
                 </div>
-                <h3 className="text-2xl font-semibold mb-2 gradient-text">
-                  {deck.name}
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  {deck.description}
-                </p>
-                <div className="flex items-center text-sm text-primary font-medium">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  {deck.rarity}
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold mb-2 gradient-text">
+                    {deck.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {deck.description}
+                  </p>
+                  <div className="flex items-center text-xs text-primary font-medium">
+                    <Sparkles className="h-3 w-3 mr-1" />
+                    {deck.rarity}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       </div>

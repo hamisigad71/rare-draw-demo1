@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.window"],
+    "target": "ES2022",
+    "module": "ES2022",
+    "strict": false,
+    "skipLibCheck": true,
+    "jsx": "react-jsx"
+  }
+}
