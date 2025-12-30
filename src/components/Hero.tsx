@@ -46,15 +46,6 @@ export const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-primary/30 rounded-full blur-3xl animate-pulse" />
-        <div
-          className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/30 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        />
-      </div>
-
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center animate-fade-in">
           {/* Logo */}
@@ -62,7 +53,7 @@ export const Hero = () => {
             <img
               src={logo}
               alt="RareDraw Logo - Premium themed card decks for meaningful connections"
-              className="h-32 w-auto rounded-3xl drop-shadow-[0_0_25px_rgba(250,182,52,0.4)] hover:drop-shadow-[0_0_40px_rgba(250,182,52,0.6)] transition-all duration-300"
+              className="h-32 w-auto rounded-3xl transition-all duration-300"
             />
           </div>
 
@@ -84,7 +75,7 @@ export const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button
               size="lg"
-              className="bg-gradient-to-r from-primary via-primary/90 to-primary hover:from-primary/90 hover:via-primary hover:to-primary/90 text-primary-foreground font-bold px-10 py-7 text-lg transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-2xl"
+              className="bg-gradient-to-r from-primary via-primary/90 to-primary hover:from-primary/90 hover:via-primary hover:to-primary/90 text-primary-foreground font-bold px-10 py-7 text-lg transition-all duration-300 hover:scale-110"
               onClick={handlePlayClick}
             >
               <Play className="mr-2 h-6 w-6" />
@@ -93,12 +84,11 @@ export const Hero = () => {
             <Button
               size="lg"
               variant="outline"
-              className="border-2 border-primary/50 text-foreground hover:text-foreground hover:bg-primary/10 hover:border-primary px-10 py-7 text-lg transition-all duration-300 hover:scale-105 backdrop-blur-sm bg-background/50 relative overflow-hidden group"
+              className="border-2 border-primary/50 text-foreground hover:text-foreground hover:bg-primary/10 hover:border-primary px-10 py-7 text-lg transition-all duration-300 hover:scale-105 backdrop-blur-sm bg-background/50"
               onClick={() => navigate("/marketplace")}
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
-              <Sparkles className="mr-2 h-6 w-6 relative z-10 group-hover:rotate-12 transition-transform" />
-              <span className="relative z-10">Browse Decks</span>
+              <Sparkles className="mr-2 h-6 w-6 group-hover:rotate-12 transition-transform" />
+              <span>Browse Decks</span>
             </Button>
           </div>
 

@@ -27,6 +27,12 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-hero overflow-hidden flex items-center justify-center p-4">
       <style>{`
         /* Clerk SignIn Styling */
+        .clerk-signin-wrapper {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        }
+
         .clerk-signin-wrapper .cl-cardBox__header {
           display: none !important;
         }
@@ -35,10 +41,15 @@ const Auth = () => {
           background-color: transparent !important;
           border: none !important;
           box-shadow: none !important;
+          width: 100% !important;
         }
 
         .clerk-signin-wrapper .cl-form__header {
           display: none !important;
+        }
+
+        .clerk-signin-wrapper .cl-form {
+          width: 100% !important;
         }
 
         .clerk-signin-wrapper .cl-form__subtitle,
@@ -50,6 +61,12 @@ const Auth = () => {
         }
 
         /* Clerk SignUp Styling */
+        .clerk-signup-wrapper {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        }
+
         .clerk-signup-wrapper .cl-cardBox__header {
           display: none !important;
         }
@@ -58,10 +75,15 @@ const Auth = () => {
           background-color: transparent !important;
           border: none !important;
           box-shadow: none !important;
+          width: 100% !important;
         }
 
         .clerk-signup-wrapper .cl-form__header {
           display: none !important;
+        }
+
+        .clerk-signup-wrapper .cl-form {
+          width: 100% !important;
         }
 
         .clerk-signup-wrapper .cl-form__subtitle,
@@ -158,7 +180,7 @@ const Auth = () => {
                     <SignIn
                       appearance={{
                         elements: {
-                          rootBox: "w-full",
+                          rootBox: "w-full flex justify-center",
                           card: "shadow-none border-none bg-transparent",
                           formFieldLabel: "text-sm font-semibold text-foreground mb-2",
                           formFieldInput: "w-full px-4 py-3 rounded-lg border-2 border-border/30 bg-background/40 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 font-medium",
@@ -175,7 +197,7 @@ const Auth = () => {
                           socialButtonsPlacement: "bottom",
                         },
                       }}
-                      redirectUrl="/"
+                      redirectUrl="/dashboard"
                     />
                   </div>
                 </TabsContent>
@@ -188,7 +210,7 @@ const Auth = () => {
                     <SignUp
                       appearance={{
                         elements: {
-                          rootBox: "w-full",
+                          rootBox: "w-full flex justify-center",
                           card: "shadow-none border-none bg-transparent",
                           formFieldLabel: "text-sm font-semibold text-foreground mb-2",
                           formFieldInput: "w-full px-4 py-3 rounded-lg border-2 border-border/30 bg-background/40 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200 font-medium",
@@ -205,7 +227,7 @@ const Auth = () => {
                           socialButtonsPlacement: "bottom",
                         },
                       }}
-                      redirectUrl="/"
+                      redirectUrl="/dashboard"
                     />
                   </div>
                 </TabsContent>

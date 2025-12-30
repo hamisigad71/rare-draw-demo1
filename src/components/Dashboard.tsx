@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useClerk } from "@clerk/clerk-react";
 import {
   Play,
   BarChart3,
@@ -21,19 +22,36 @@ import {
   Share2,
   Heart,
   MessageSquare,
+  Sparkles,
+  LogOut,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { fetchUserStats, DEMO_STATS, UserStats } from "@/lib/userStats";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Dashboard = () => {
   const navigate = useNavigate();
+  const { signOut } = useClerk();
   const { user, isSignedIn, isLoaded } = useAuth();
+  const { toast } = useToast();
   const [userName, setUserName] = useState("Player");
   const [userEmail, setUserEmail] = useState("");
   const [userImage, setUserImage] = useState<string | null>(null);
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showSignOutDialog, setShowSignOutDialog] = useState(false);
+  const [expandGettingStarted, setExpandGettingStarted] = useState(false);
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
@@ -73,6 +91,32 @@ export const Dashboard = () => {
         });
     }
   }, [user, isSignedIn, isLoaded, navigate]);
+
+  const handleSignOut = async () => {
+    try {
+      // Sign out from Clerk
+      await signOut();
+      
+      // Show goodbye toast
+      toast({
+        title: "See you soon! 👋",
+        description: "Hate to see you go! Come back and play again soon.",
+        duration: 3000,
+      });
+      
+      // Redirect to home
+      setTimeout(() => {
+        navigate("/");
+      }, 500);
+    } catch (error) {
+      console.error("Sign out failed:", error);
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -124,142 +168,297 @@ export const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-hero pt-20 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Premium Header with Profile */}
+        {/* Premium Hero Section */}
         <div className="mb-12 animate-fade-in">
-          <div className="premium-card border-2 border-gradient-primary overflow-hidden relative">
-            <div className="absolute inset-0">
-              <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-primary opacity-5 rounded-full blur-3xl" />
-              <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-secondary/10 rounded-full blur-3xl" />
-            </div>
-            
-            <div className="relative z-10">
-              {/* Profile Section */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-8 pb-8 border-b border-border/30">
-                <div className="flex items-center gap-4 flex-1">
-                  {userImage ? (
-                    <img 
-                      src={userImage} 
-                      alt={userName}
-                      className="w-24 h-24 rounded-full border-4 border-primary shadow-lg"
-                    />
-                  ) : (
-                    <div className="w-24 h-24 rounded-full border-4 border-primary bg-primary/20 flex items-center justify-center">
-                      <Users className="w-12 h-12 text-primary" />
+          <div className="relative overflow-hidden rounded-3xl">
+            {/* Clean Solid Background */}
+            <div className="absolute inset-0 z-0 bg-background" />
+
+            {/* Main Content Card */}
+            <div className="relative z-10 bg-gradient-to-br from-background to-background backdrop-blur-xl border border-primary/20 rounded-3xl overflow-hidden shadow-2xl">
+              <div className="absolute inset-0 bg-transparent" />
+              
+              <div className="relative z-20 p-6 md:p-12 lg:p-16">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
+                  {/* Left Section - Main Profile (1 col) */}
+                  <div className="space-y-6">
+                    {/* Header with Greeting */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-75" />
+                          <div className="relative bg-background rounded-full p-2">
+                            <Sparkles className="w-5 h-5 text-primary" />
+                          </div>
+                        </div>
+                        <p className="text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary uppercase tracking-widest">
+                          Welcome back, Champion
+                        </p>
+                      </div>
+                      <h1 className="text-4xl md:text-5xl font-black tracking-tight">
+                        <span className="block bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-secondary">
+                          {userName}
+                        </span>
+                      </h1>
+                      <p className="text-foreground/70 text-lg">
+                        {stats.isNewUser 
+                          ? "Your gaming adventure awaits! 🚀" 
+                          : `You've played ${stats.gamesPlayed} amazing games`}
+                      </p>
                     </div>
-                  )}
-                  <div>
-                    <h1 className="text-3xl md:text-4xl font-bold gradient-text">{userName}</h1>
-                    {userEmail && <p className="text-foreground/70">{userEmail}</p>}
-                    <div className="flex items-center gap-4 mt-3">
-                      <span className="px-4 py-2 bg-primary/20 text-primary rounded-full text-sm font-semibold">Level {stats.level}</span>
-                      <span className="px-4 py-2 bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 rounded-full text-sm font-semibold">{stats.totalPoints} XP</span>
+
+                    {/* Enhanced Level Progress Card */}
+                    <div className="space-y-4 p-6 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <p className="text-sm font-bold text-foreground/80">Level {stats.level}</p>
+                          <p className="text-xs text-foreground/60">Next milestone in reach</p>
+                        </div>
+                        <div className="text-right space-y-1">
+                          <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                            {stats.nextLevelProgress}%
+                          </p>
+                          <p className="text-xs text-primary font-semibold">{stats.totalPoints} XP earned</p>
+                        </div>
+                      </div>
+                      <div className="w-full h-3 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-full overflow-hidden border border-primary/30 shadow-inner">
+                        <div 
+                          className="h-full bg-gradient-to-r from-primary via-purple-500 to-secondary rounded-full transition-all duration-1000 ease-out shadow-lg relative"
+                          style={{ width: `${stats.nextLevelProgress}%` }}
+                        >
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-3 pt-8">
+                      <Button 
+                        onClick={() => navigate("/marketplace")}
+                        className="bg-gradient-to-r from-primary to-secondary hover:shadow-elevated text-white font-bold py-3 px-8 rounded-xl transition-all duration-300 group text-base flex-1 sm:flex-auto border border-primary/50"
+                      >
+                        <Dice6 className="w-5 h-5 mr-2 group-hover:rotate-180 transition-transform duration-300" />
+                        Start Playing
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        className="border-2 border-primary/50 hover:bg-primary/10 font-bold py-3 px-8 rounded-xl transition-all duration-300 group text-base flex-1 sm:flex-auto backdrop-blur-sm"
+                      >
+                        <Share2 className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                        Invite Friends
+                      </Button>
+                      <Button 
+                        onClick={() => setShowSignOutDialog(true)}
+                        variant="outline"
+                        className="border-2 border-red-500/40 hover:bg-red-500/10 text-red-600 dark:text-red-400 font-bold py-3 px-6 rounded-xl transition-all duration-300 group text-base"
+                      >
+                        <LogOut className="w-5 h-5 mr-2 group-hover:translate-x-1 transition-transform" />
+                        Sign Out
+                      </Button>
                     </div>
                   </div>
-                </div>
-                <div className="flex gap-3 w-full sm:w-auto">
-                  <Button onClick={() => navigate("/marketplace")} className="flex-1 sm:flex-auto bg-gradient-primary hover:opacity-90 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 group">
-                    <Dice6 className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                    Play Now
-                  </Button>
-                  <Button variant="outline" className="border-2 border-primary/30 hover:bg-primary/5 font-semibold py-3 px-6 rounded-lg">
-                    <Share2 className="w-5 h-5" />
-                  </Button>
-                </div>
-              </div>
+                  {/* Right Section - Profile & Stats */}
+                  <div className="lg:col-span-2">
+                    <div className="space-y-6">
+                      {/* User Avatar & Quick Info */}
+                      <div className="relative group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all" />
+                        <div className="relative bg-gradient-to-br from-background to-background/80 backdrop-blur-xl border border-primary/30 rounded-2xl p-6 hover:shadow-xl transition-all duration-300">
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-4">
+                              {userImage ? (
+                                <img 
+                                  src={userImage} 
+                                  alt={userName}
+                                  className="w-20 h-20 rounded-xl border-4 border-gradient-primary shadow-lg object-cover"
+                                />
+                              ) : (
+                                <div className="w-20 h-20 rounded-xl border-4 border-gradient-primary bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center flex-shrink-0">
+                                  <Crown className="w-10 h-10 text-white" />
+                                </div>
+                              )}
+                              <div className="space-y-2">
+                                <p className="text-sm text-foreground/70">Player Status</p>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                  <p className="text-sm font-bold text-green-500">Active Now</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right space-y-1">
+                              <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                                {stats.level}
+                              </p>
+                              <p className="text-xs text-foreground/60 font-bold">LEVEL</p>
+                            </div>
+                          </div>
+                          <div className="h-px bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0 mb-4" />
+                          <p className="text-sm text-foreground/70 text-center">
+                            {stats.isNewUser 
+                              ? "Fresh player - Ready to shine! ✨" 
+                              : `${stats.gamesPlayed} games played • ${stats.friends} friends`}
+                          </p>
+                        </div>
+                      </div>
 
-              {/* Level Progress */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm font-semibold">Progress to Level {stats.level + 1}</p>
-                  <p className="text-sm font-bold text-primary">{stats.nextLevelProgress}%</p>
-                </div>
-                <div className="w-full bg-secondary/10 rounded-full h-2 overflow-hidden">
-                  <div className="bg-gradient-primary h-full rounded-full transition-all duration-500" style={{ width: `${stats.nextLevelProgress}%` }} />
+                      {/* Stats Cards Grid */}
+                      {!stats.isNewUser && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="relative group overflow-hidden rounded-xl">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm hover:shadow-lg transition-all">
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                                  <Play className="w-5 h-5 text-blue-500" />
+                                </div>
+                                <span className="text-xs font-bold text-blue-600 dark:text-blue-400">Games</span>
+                              </div>
+                              <p className="text-3xl font-black text-blue-600 dark:text-blue-400">{stats.gamesPlayed}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="relative group overflow-hidden rounded-xl">
+                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/30 rounded-xl p-4 backdrop-blur-sm hover:shadow-lg transition-all">
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                                  <Trophy className="w-5 h-5 text-purple-500" />
+                                </div>
+                                <span className="text-xs font-bold text-purple-600 dark:text-purple-400">Wins</span>
+                              </div>
+                              <p className="text-3xl font-black text-purple-600 dark:text-purple-400">{stats.achievements}</p>
+                            </div>
+                          </div>
+
+                          <div className="relative group overflow-hidden rounded-xl">
+                            <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-green-500/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/30 rounded-xl p-4 backdrop-blur-sm hover:shadow-lg transition-all">
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                                  <Users className="w-5 h-5 text-green-500" />
+                                </div>
+                                <span className="text-xs font-bold text-green-600 dark:text-green-400">Friends</span>
+                              </div>
+                              <p className="text-3xl font-black text-green-600 dark:text-green-400">{stats.friends}</p>
+                            </div>
+                          </div>
+
+                          <div className="relative group overflow-hidden rounded-xl">
+                            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-amber-500/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-500/30 rounded-xl p-4 backdrop-blur-sm hover:shadow-lg transition-all">
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                                  <Star className="w-5 h-5 text-amber-500" />
+                                </div>
+                                <span className="text-xs font-bold text-amber-600 dark:text-amber-400">XP</span>
+                              </div>
+                              <p className="text-3xl font-black text-amber-600 dark:text-amber-400">{Math.floor(stats.totalPoints / 100)}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {stats.isNewUser && (
+                        <div className="relative group">
+                          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all" />
+                          <div className="relative bg-gradient-to-br from-background to-background/80 backdrop-blur-xl border border-primary/30 rounded-2xl p-6 hover:shadow-xl transition-all duration-300">
+                            <div className="space-y-3 text-center">
+                              <Sparkles className="w-8 h-8 text-primary mx-auto animate-bounce" />
+                              <p className="font-bold text-lg text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Ready to Begin?</p>
+                              <p className="text-sm text-foreground/70">Start your first game and unlock amazing rewards</p>
+                              <div className="w-12 h-1 bg-gradient-to-r from-primary to-secondary rounded-full mx-auto" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Stats Grid */}
-        {!stats.isNewUser && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
-            <div className="premium-card group hover:shadow-elevated transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-muted-foreground text-xs font-semibold">GAMES PLAYED</p>
-                  <Play className="w-4 h-4 text-primary" />
-                </div>
-                <p className="text-3xl font-bold gradient-text">{stats.gamesPlayed}</p>
-                <p className="text-xs text-muted-foreground mt-2">+5 this week</p>
-              </div>
-            </div>
-
-            <div className="premium-card group hover:shadow-elevated transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-muted-foreground text-xs font-semibold">WIN STREAK</p>
-                  <Flame className="w-4 h-4 text-orange-500" />
-                </div>
-                <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">{stats.winStreak}</p>
-                <p className="text-xs text-muted-foreground mt-2">🔥 Keep it going!</p>
-              </div>
-            </div>
-
-            <div className="premium-card group hover:shadow-elevated transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-muted-foreground text-xs font-semibold">DECKS OWNED</p>
-                  <Trophy className="w-4 h-4 text-purple-500" />
-                </div>
-                <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{stats.favoriteDecks}</p>
-                <p className="text-xs text-muted-foreground mt-2">💎 Collection</p>
-              </div>
-            </div>
-
-            <div className="premium-card group hover:shadow-elevated transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-muted-foreground text-xs font-semibold">ACHIEVEMENTS</p>
-                  <Award className="w-4 h-4 text-blue-500" />
-                </div>
-                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{stats.achievements}</p>
-                <p className="text-xs text-muted-foreground mt-2">Unlocked</p>
-              </div>
-            </div>
-
-            <div className="premium-card group hover:shadow-elevated transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-muted-foreground text-xs font-semibold">FRIENDS</p>
-                  <Users className="w-4 h-4 text-green-500" />
-                </div>
-                <p className="text-3xl font-bold text-green-600 dark:text-green-400">{stats.friends}</p>
-                <p className="text-xs text-muted-foreground mt-2">In network</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* New User Welcome Section */}
+        {/* New User Welcome Section - Collapsible */}
         {stats.isNewUser && (
           <div className="mb-12">
-            <h2 className="text-3xl font-bold mb-6">Let's Get You Started! 🚀</h2>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              {howToPlaySteps.map((step, idx) => (
-                <div key={idx} className="premium-card border-2 border-primary/20 hover:shadow-elevated transition-all hover:-translate-y-1 group animate-fade-in" style={{ animationDelay: `${0.1 * idx}s` }}>
-                  <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-primary text-white font-bold text-lg mb-3 group-hover:scale-110 transition-transform">
-                    {step.num}
+            {/* Collapsible Header */}
+            <button
+              onClick={() => setExpandGettingStarted(!expandGettingStarted)}
+              className="w-full mb-6 group"
+            >
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/30 p-6 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-lg bg-gradient-primary text-white flex items-center justify-center font-bold text-lg group-hover:scale-110 transition-transform">
+                      🚀
+                    </div>
+                    <div className="text-left">
+                      <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                        Let's Get You Started!
+                      </h2>
+                      <p className="text-sm text-foreground/70 mt-1">
+                        {expandGettingStarted ? "Click to collapse" : "5 simple steps to begin your adventure"}
+                      </p>
+                    </div>
                   </div>
-                  <h3 className="font-bold text-lg mb-2">{step.title}</h3>
-                  <p className="text-sm text-foreground/70">{step.desc}</p>
+                  <div className={`text-primary transition-transform duration-300 ${expandGettingStarted ? "rotate-180" : ""}`}>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                  </div>
                 </div>
-              ))}
+              </div>
+            </button>
+
+            {/* Expandable Content */}
+            <div className={`overflow-hidden transition-all duration-500 ease-out ${expandGettingStarted ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"}`}>
+              <div className="space-y-4">
+                {howToPlaySteps.map((step, idx) => (
+                  <div
+                    key={idx}
+                    className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-background to-background/50 border border-primary/20 hover:border-primary/40 transition-all duration-300 p-6 hover:shadow-lg hover:-translate-x-1"
+                    style={{
+                      animation: expandGettingStarted ? `slideIn 0.3s ease-out ${idx * 0.1}s forwards` : "none",
+                      opacity: expandGettingStarted ? 1 : 0,
+                    }}
+                  >
+                    {/* Gradient accent line on left */}
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
+                    
+                    <div className="flex gap-6 items-start">
+                      {/* Step Number Circle */}
+                      <div className="flex-shrink-0">
+                        <div className="w-12 h-12 rounded-full bg-gradient-primary text-white font-bold text-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                          {step.num}
+                        </div>
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="flex-1 min-w-0 pt-1">
+                        <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
+                          {step.title}
+                        </h3>
+                        <p className="text-sm text-foreground/70 mt-2 leading-relaxed">
+                          {step.desc}
+                        </p>
+                      </div>
+                      
+                      {/* Arrow icon on hover */}
+                      <div className="flex-shrink-0 text-primary opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1">
+                        <ArrowRight className="w-5 h-5" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Motivational footer */}
+              <div className="mt-8 p-6 rounded-xl bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20 text-center">
+                <p className="text-foreground/80 font-semibold">
+                  Follow these steps and you'll be ready to create unforgettable memories! ✨
+                </p>
+              </div>
             </div>
           </div>
         )}
@@ -386,6 +585,29 @@ export const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Sign Out Confirmation Dialog */}
+      <AlertDialog open={showSignOutDialog} onOpenChange={setShowSignOutDialog}>
+        <AlertDialogContent className="border-2 border-primary/30">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl">Sign Out?</AlertDialogTitle>
+            <AlertDialogDescription className="text-base">
+              Are you sure you want to leave? We'd love to have you back soon! 👋
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-2 border-primary/40 font-bold">
+              Stay
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleSignOut}
+              className="bg-red-600 hover:bg-red-700 text-white font-bold"
+            >
+              Sign Out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
